@@ -44,7 +44,7 @@ export interface EmailListRequest {
 }
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://192.168.125.203:5000/';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tfshrms.cloud/email/';
 
 // API Service
 export const emailApi = {
