@@ -47,7 +47,7 @@ export interface EmailListRequest {
 // API Service
 export const emailApi = {
   async getEmails(request: EmailListRequest): Promise<EmailListResponse> {
-    const response = await fetch(`email_send_import/list`, {
+    const response = await fetch(`/email/email_send_import/list`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
