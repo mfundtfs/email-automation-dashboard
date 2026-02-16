@@ -43,13 +43,11 @@ export interface EmailListRequest {
   date: string;
 }
 
-// API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tfshrms.cloud/email/';
 
 // API Service
 export const emailApi = {
   async getEmails(request: EmailListRequest): Promise<EmailListResponse> {
-    const response = await fetch(`${API_BASE_URL}email_send_import/list`, {
+    const response = await fetch(`email_send_import/list`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
