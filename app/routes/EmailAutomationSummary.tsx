@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "../components/ui/input";
 import { FaRegEye } from "react-icons/fa";
+import { toast } from "sonner";
 import {
   Table,
   TableHeader,
@@ -42,8 +43,6 @@ const PAGE_SIZES = [10, 20, 50, 100, 500, "All"] as const;
 const EmailAutomationSummary = () => {
   const [data, setData] = useState<EmailRecord[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number | "All">(20);
   const [totalPages, setTotalPages] = useState(1);
@@ -65,41 +64,52 @@ const EmailAutomationSummary = () => {
 
   // Fetch data from API - Backend handles pagination
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchData = async () => {
       setLoading(true);
-      setError(null);
-      setSuccess(null);
+      toast.dismiss(); // Dismiss any existing toasts
+      
       try {
         // When "All" is selected, send total_records or a large number
-        const perPageValue = pageSize === "All" ? (totalRecords || 100000) : pageSize;
+        const perPageValue = pageSize === "All" ? 100000 : pageSize;
         
         const response = await emailApi.getEmails({
           page,
           per_page: perPageValue,
           date,
         });
+        
+        if (!isMounted) return; // Prevent toast if component unmounted
+        
         setData(response.data.records);
         setTotalPages(response.data.pagination.total_pages);
         setTotalRecords(response.data.pagination.total_records);
-        // Show success message only for frontend
+        // Show success toast
         if (response.data.records.length > 0) {
-          setSuccess(`Successfully loaded ${response.data.records.length} records`);
+          toast.success(`Successfully loaded ${response.data.records.length} records`);
         } else {
-          setSuccess('No records found for the selected date');
+          toast.info('No records found for the selected date');
         }
-        // Auto-hide success message after 3 seconds
-        setTimeout(() => setSuccess(null), 3000);
       } catch (err) {
-        // Show user-friendly frontend error messages only
+        if (!isMounted) return; // Prevent toast if component unmounted
+        
+        // Show error toast
         console.error('Error fetching emails:', err);
-        setError('Unable to load email data. Please check your connection and try again.');
+        toast.error('Unable to load email data. Please check your connection and try again.');
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
-  }, [page, pageSize, date, totalRecords]);
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [page, pageSize, date]);
 
   // Filter data by responds (frontend only)
   const filteredData = respondsFilter && respondsFilter !== 'all'
@@ -154,13 +164,6 @@ const EmailAutomationSummary = () => {
           </div>
         </div>
 
-        {/* Success State */}
-        {success && !loading && (
-          <div className="bg-green-50 border border-green-300 text-green-800 px-4 py-3 rounded-lg mb-4">
-            <strong>Success:</strong> {success}
-          </div>
-        )}
-
         {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-12">
@@ -168,15 +171,8 @@ const EmailAutomationSummary = () => {
           </div>
         )}
 
-        {/* Error State */}
-        {error && !loading && (
-          <div className="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-lg mb-4">
-            <strong>Error:</strong> {error}
-          </div>
-        )}
-
         {/* Table */}
-        {!loading && !error && (
+        {!loading && (
           <div className="rounded-2xl shadow-xl overflow-hidden border-2 border-blue-400 animate-fade-in">
           <Table className="bg-white text-base">
             <TableHeader>
@@ -264,7 +260,7 @@ const EmailAutomationSummary = () => {
         )}
         
         {/* Pagination */}
-        {!loading && !error && (
+        {!loading && (
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-8">
           <div className="flex items-center gap-2 order-1 md:order-0">
             <span className="text-sm text-muted-foreground">Rows per page:</span>
