@@ -47,18 +47,33 @@ export interface EmailListRequest {
 // API Service
 export const emailApi = {
   async getEmails(request: EmailListRequest): Promise<EmailListResponse> {
-    const response = await fetch(`/email/email_send_import/list`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    });
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api/';
+    console.log('Fetching from:', `${apiBaseUrl}email_send_import/list`);
+    console.log('Request payload:', request);
+    
+    try {
+      const response = await fetch(`${apiBaseUrl}email_send_import/list`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('Response data:', data);
+      return data;
+    } catch (error) {
+      console.error('Fetch error:', error);
+      throw error;
     }
-
-    return response.json();
   },
 };

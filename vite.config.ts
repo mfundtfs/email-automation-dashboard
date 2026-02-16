@@ -5,7 +5,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const backendUrl = env.VITE_BACKEND_URL || 'http://192.168.125.203:5000';
+  const backendUrl = env.VITE_BACKEND_URL || 'https://tfshrms.cloud/email/';
 
   return {
     plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
