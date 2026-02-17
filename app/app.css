@@ -190,6 +190,22 @@ body {
   }
 }
 
+/* Fix date input calendar icon visibility */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5) brightness(0.8);
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* For dark mode if needed */
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.9) brightness(1.2);
+}
+
 /* Custom Scrollbar - Blue Theme */
 ::-webkit-scrollbar {
   width: 12px;
@@ -220,4 +236,16 @@ body {
 * {
   scrollbar-width: thin;
   scrollbar-color: #3b82f6 #eff6ff;
+}
+/* Center date input text */
+input[type="date"] {
+  text-align: center;
+}
+
+input[type="date"]::-webkit-datetime-edit {
+  text-align: center;
+}
+
+input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
 }
