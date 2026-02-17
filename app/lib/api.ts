@@ -1,5 +1,9 @@
 // API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/';
+// In production, use the full backend URL
+// In development, use the proxy configured in vite.config.ts
+const API_BASE_URL = import.meta.env.PROD 
+  ? 'https://tfshrms.cloud/email/'
+  : '/api/';
 
 // Unsubscribe response interface
 export interface UnsubscribeResponse {
